@@ -4,6 +4,10 @@ sm = 10;
 tol = 0.1;
 eps = 0.01;
 
+// Minkowski rounding radius
+m_r = 0;
+m_sm = sm;
+
 layer_h = 0.2 + eps;
 line_w = 0.8;
 
@@ -57,17 +61,22 @@ knob_o = 3;
 module knob() {
   difference() {
     union() {
-      // base
+      //minkowski() {
+        //sphere(r=m_r,$fn=m_sm);
+        union() {
+          // base
+          translate([0,0,knob_h])
+            cylinder(r=knob_R-m_r,h=knob_h2-m_r+eps,$fn=knob_sm);
+          translate([0,0,knob_h+knob_h2-m_r])
+            cylinder(r1=knob_R-m_r,r2=knob_R/2-m_r,h=knob_h3-knob_h2-m_r,$fn=knob_sm);
+          // handle
+          translate([-knob_w/2+knob_rr+m_r+knob_o, -knob_R/3-knob_rr+m_r, knob_h]) 
+            cube([knob_w-2*knob_rr-2*m_r, 2*knob_R/3-2*knob_rr-2*m_r, knob_h4-knob_h-m_r]);
+          translate([-knob_w/2+knob_rr+m_r-knob_o, -knob_R/3+knob_rr+m_r, knob_h]) 
+            cube([knob_w-2*knob_rr-2*m_r, 2*knob_R/3-2*knob_rr-2*m_r, knob_h4-knob_h-m_r]);
+        }
+      //}
       cylinder(r=knob_r,h=knob_h+eps,$fn=knob_sm);
-      translate([0,0,knob_h])
-        cylinder(r=knob_R,h=knob_h2+eps,$fn=knob_sm);
-      translate([0,0,knob_h+knob_h2])
-        cylinder(r1=knob_R,r2=knob_R/2,h=knob_h3-knob_h2,$fn=knob_sm);
-      // handle
-      translate([-knob_w/2+knob_rr+knob_o, -knob_R/3-knob_rr, knob_h]) 
-        cube([knob_w-2*knob_rr, 2*knob_R/3-2*knob_rr, knob_h4-knob_h]);
-      translate([-knob_w/2+knob_rr-knob_o, -knob_R/3+knob_rr, knob_h]) 
-        cube([knob_w-2*knob_rr, 2*knob_R/3-2*knob_rr, knob_h4-knob_h]);
     }
     // shaft hole and slot
     translate([0,0,-eps])
